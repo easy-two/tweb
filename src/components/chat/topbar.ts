@@ -59,13 +59,16 @@ import PopupBoostsViaGifts from '../popups/boostsViaGifts';
 import AppStatisticsTab from '../sidebarRight/tabs/statistics';
 import {ChatType} from './chat';
 import PopupStartWith from '../popups/streamWith';
+import wrapReply from '../wrappers/reply';
 
 type ButtonToVerify = {element?: HTMLElement, verify: () => boolean | Promise<boolean>};
 
 const PINNED_ALWAYS_FLOATING = false;
 
 export default class ChatTopbar {
+  public wrapper: HTMLDivElement;
   public container: HTMLDivElement;
+  private streamContainer: HTMLDivElement;
   private btnBack: HTMLButtonElement;
   private btnBackBadge: HTMLElement;
   private chatInfo: HTMLDivElement;
@@ -114,6 +117,11 @@ export default class ChatTopbar {
 
   public construct() {
     // this.chat.log.error('Topbar construction');
+
+    this.wrapper = document.createElement('div');
+    this.wrapper.classList.add('topbar-wrapper');
+
+    this.streamContainer = this.createStreamBar();
 
     this.container = document.createElement('div');
     this.container.classList.add('sidebar-header', 'topbar', 'hide');
@@ -290,6 +298,8 @@ export default class ChatTopbar {
     };
 
     attachClickEvent(this.btnBack, onBtnBackClick, {listenerSetter: this.listenerSetter});
+    this.wrapper.append(this.container);
+    this.wrapper.append(this.streamContainer);
   }
 
   private pushButtonToVerify(element: HTMLElement, verify: ButtonToVerify['verify']) {
@@ -781,6 +791,13 @@ export default class ChatTopbar {
       }
     });
 
+    this.listenerSetter.add(rootScope)('group_call_update', (groupCall) => {
+      // TODO handle groupdCall.id
+      const showStreamBar = groupCall._ === 'groupCall' && groupCall.version === 1
+
+      showStreamBar ? this.streamContainer.classList.remove('hide') :  this.streamContainer.classList.add('hide');
+    });
+
     return this;
   }
 
@@ -1225,5 +1242,28 @@ export default class ChatTopbar {
       prepare,
       destroy: () => middlewareHelper.destroy()
     };
+  }
+
+  private createStreamBar(): HTMLDivElement {
+    const container = document.createElement('div');
+    container.classList.add('sidebar-header', 'topbar-stream', 'hide');
+
+    const {container: replyContainer} = wrapReply({
+      title: i18n('VoiceChat.Chat.LiveStream'),
+      subtitle: i18n('Peer.Activity.Chat.Multi.WatchingLiveStream', [228])
+    });
+
+    const joinBtn = Button('btn-primary btn-color-primary btn-control btn-control-small', {text: 'PeerInfo.Action.JoinLiveStream'})
+
+    attachClickEvent(joinBtn, this.onJoinLiveStreamClick)
+
+    replyContainer.append(joinBtn);
+    container.append(replyContainer);
+
+    return container;
+  }
+
+  private onJoinLiveStreamClick = () => {
+    console.log('>>> TODO: add join code');
   }
 }

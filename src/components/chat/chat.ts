@@ -361,7 +361,7 @@ export default class Chat extends EventListenerBase<{
 
     this.bubbles.attachContainerListeners();
 
-    this.container.append(this.topbar.container, this.bubbles.container, this.input.chatInput);
+    this.container.append(this.topbar.wrapper, this.bubbles.container, this.input.chatInput);
 
     this.bubbles.listenerSetter.add(rootScope)('dialog_migrate', ({migrateFrom, migrateTo}) => {
       if(this.peerId === migrateFrom) {

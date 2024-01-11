@@ -65,6 +65,28 @@ body.is-right-column-shown {
   }
 }
 
+.topbar-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  z-index: 2;
+}
+
+.topbar-stream {
+  display: flex;
+  background-color: var(--surface-color);
+  height: 50px;
+  flex: 1;
+  border: 1px solid var(--border-color);
+
+  .quote-like {
+    background: linear-gradient(90deg, rgba(69, 136, 227, .1) 0.79%, rgba(151, 111, 255, .1) 54.33%, rgba(228, 106, 206, .1) 97.09%);
+    display: flex;
+    width: 100%;
+    padding-right: 3px;
+  }
+}
+
 .topbar {
   --topbar-height: 3.5rem;
   
@@ -79,7 +101,6 @@ body.is-right-column-shown {
 	--pinned-message-height: var(--pinned-container-height);
 
 	width: 100%;
-	z-index: 2;
 	min-height: var(--topbar-height) !important;
 	max-height: var(--topbar-height) !important;
 	margin-bottom: var(--pinned-floating-height);
