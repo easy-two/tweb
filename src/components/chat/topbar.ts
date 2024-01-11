@@ -58,6 +58,7 @@ import createBadge from '../../helpers/createBadge';
 import PopupBoostsViaGifts from '../popups/boostsViaGifts';
 import AppStatisticsTab from '../sidebarRight/tabs/statistics';
 import {ChatType} from './chat';
+import PopupStartWith from '../popups/streamWith';
 
 type ButtonToVerify = {element?: HTMLElement, verify: () => boolean | Promise<boolean>};
 
@@ -80,6 +81,7 @@ export default class ChatTopbar {
   private btnMute: HTMLButtonElement;
   private btnSearch: HTMLButtonElement;
   private btnMore: HTMLElement;
+  private btnStream: HTMLElement;
 
   private chatActions: ChatActions;
   private chatRequests: ChatRequests;
@@ -91,6 +93,7 @@ export default class ChatTopbar {
   public listenerSetter: ListenerSetter;
 
   private menuButtons: Parameters<typeof ButtonMenuToggle>[0]['buttons'];
+  private streamButtons: Parameters<typeof ButtonMenuToggle>[0]['buttons'];
   private buttonsToVerify: ButtonToVerify[];
   private chatInfoContainer: HTMLDivElement;
   private person: HTMLDivElement;
@@ -161,6 +164,9 @@ export default class ChatTopbar {
     this.chatAudio = new ChatAudio(this, this.chat, this.managers);
     this.chatRequests = new ChatRequests(this, this.chat, this.managers);
     this.chatActions = new ChatActions(this, this.chat, this.managers);
+
+    // if (this.streamButtons.length) {
+    // }
 
     if(this.menuButtons.length) {
       this.btnMore = ButtonMenuToggle({
@@ -503,6 +509,13 @@ export default class ChatTopbar {
       text: 'BoostsViaGifts.Title',
       onClick: () => {
         PopupElement.createPopup(PopupBoostsViaGifts, this.peerId);
+      },
+      verify: async() => await this.managers.appPeersManager.isBroadcast(this.peerId) && this.managers.appChatsManager.hasRights(this.peerId.toChatId(), 'create_giveaway')
+    }, {
+      icon: 'videochat',
+      text: 'PeerInfo.Action.StreamWith',
+      onClick: () => {
+        PopupElement.createPopup(PopupStartWith, this.peerId);
       },
       verify: async() => await this.managers.appPeersManager.isBroadcast(this.peerId) && this.managers.appChatsManager.hasRights(this.peerId.toChatId(), 'create_giveaway')
     }, {
